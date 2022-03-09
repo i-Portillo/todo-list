@@ -1,5 +1,5 @@
 import { events as pubSub } from './events';
-import Task from './Task';
+import { Task } from './Task';
 
 export default class Project {
     constructor(name) {
@@ -7,19 +7,8 @@ export default class Project {
         this.tasks = [];
     }
 
-    get name() {
-        return this._name;
-    }
-
-    set name(newName) {
-        console.log("Setting project name.")
-        if (newName) {
-            this._name = newName;
-        }
-    }
-
-    addTask() {
-        this.tasks.push(new Task('Do thing'));
+    addTask(newTask) {
+        this.tasks.push(newTask);
     }
 
     removeTask(id) {

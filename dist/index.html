@@ -11,8 +11,8 @@
 <body>
     <main>
         <div id="sidebar">
-            <button id="add-project-btn">Add Project</button>
-            <div class="project">
+            <button id="addProjectBtn">Add Project</button>
+            <!-- <div class="project">
                 <p class="project-name">Project Name</p>
                 <ul>
                     <li>Today</li>
@@ -27,41 +27,39 @@
                     <li>This week</li>
                     <li>All tasks</li>
                 </ul>
-            </div>
+            </div> -->
         </div>
         <div id="content">
             <div class="project-box">
-                <button id="add-task-btn">Add Task</button>
-                <ul class="task-list">
+                <button id="addTaskBtn">Add Task</button>
+                <ul id="taskList">
 
                 </ul>
             </div>
-            <div id="new-task-box" class="">
-                <form id="new-task-form">
-                    <h3>New Task</h3>
-                    <div class="row">
-                        <label for="newTaskTitle">Title:</label>
-                        <input type="text" id="newTaskTitle">
-                    </div>
-                    <div class="row">
-                        <label for="newTaskDescription">Description:</label>
-                        <textarea name="newTaskDescription"
-                         id="newTaskDescription" rows="3"></textarea>
-                    </div>
-                    <div class="row">
-                        <label for="newTaskDueDate">Due Date:</label>
-                        <input type="date" id="newTaskDueDate">
-                    </div>
-                    <div class="row">
-                        <label for="newTaskPriority">Priority:</label>
-                        <input type="range" min="1" max="5">
-                    </div>
-                    <div class="row">
-                        <button type="button">Save</button>
-                        <button type="button">Cancel</button>
-                    </div>
-                </form>
-            </div>
+            <form id="newTaskForm" class="hidden">
+                <h3>New Task</h3>
+                <div class="row">
+                    <label for="newTaskTitle">Title:</label>
+                    <input type="text" id="newTaskTitle">
+                </div>
+                <div class="row">
+                    <label for="newTaskDescription">Description:</label>
+                    <textarea name="newTaskDescription"
+                        id="newTaskDescription" rows="3"></textarea>
+                </div>
+                <div class="row">
+                    <label for="newTaskDueDate">Due Date:</label>
+                    <input type="date" id="newTaskDueDate">
+                </div>
+                <div class="row">
+                    <label for="newTaskPriority">Priority:</label>
+                    <input type="range" min="1" max="5" id="newTaskPriority">
+                </div>
+                <div class="row">
+                    <button type="button" id="saveTaskBtn">Save</button>
+                    <button type="button" id="cancelTaskBtn">Cancel</button>
+                </div>
+            </form>
         </div>
     </main>
     <footer>

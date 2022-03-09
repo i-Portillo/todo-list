@@ -15,16 +15,11 @@ main {
     flex: 1;
 }
 
-#new-task-box {
+#newTaskForm {
     position: fixed;
     top: 50px;
     right: 50px;
     background-color: white;
-}
-
-#new-task-form {
-    display: flex;
-    flex-flow: column;
 }
 
 .row {
@@ -32,15 +27,15 @@ main {
     grid-template-columns: 1fr 2fr;
 }
 
-#new-task-form label {
+#newTaskForm label {
     width: 100px;
 }
 
-#new-task-form textarea {
+#newTaskForm textarea {
     resize: none;
 }
 
-#new-task-form button {
+#newTaskForm button {
     width: 100px;
 }
 
