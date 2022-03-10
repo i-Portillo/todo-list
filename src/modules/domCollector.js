@@ -13,3 +13,5 @@ export const newTaskFields = {
 export const taskList = document.getElementById('taskList');
 
 export const addProjectBtn = document.getElementById('addProjectBtn');
+
+export const fullscreenContainer = document.querySelector('.fullscreenContainer');

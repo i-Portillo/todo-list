@@ -7,15 +7,15 @@ export default class Project {
         this.tasks = [];
     }
 
-    addTask(newTask) {
-        this.tasks.push(newTask);
-    }
+    // addTask(newTask) {
+    //     this.tasks.push(newTask);
+    // }
 
-    removeTask(id) {
-        const taskToDelete =  this.tasks.find(
-            (task) => task.getId() === id
-        );
-        this.tasks.splice(this.tasks.indexOf(taskToDelete), 1);
-    }
+    // removeTask(id) {
+    //     const taskToDelete =  this.tasks.find(
+    //         (task) => task.getId() === id
+    //     );
+    //     this.tasks.splice(this.tasks.indexOf(taskToDelete), 1);
+    // }
 
 }

@@ -3,15 +3,15 @@ import Task from './Task';
 import { events as pubSub } from './events';
 
 
-localStorage.clear(); //DEBUG
+// localStorage.clear(); //DEBUG
 
-let projects = JSON.parse(localStorage.getItem('projects')) || [];
+export let projects = JSON.parse(localStorage.getItem('projects')) || [];
 
 if (projects.length === 0) {
     const newProject = new Project('PFG');
     const task1 = new Task('Do thing', 'Desc1');
     const task2 = new Task('Do Other Thing', 'Desc2');
-    newProject.addTask(task1);
+    newProject.tasks.push(task1);
     newProject.tasks.push(task2);
     projects.push(newProject);
 
@@ -46,18 +46,27 @@ function saveNewTask([title, description, dueDate, priority]) {
     const newTask = new Task(title, description, dueDate, priority);
     currentProject.tasks.push(newTask);
     pubSub.publish('projectTasksUpdated', currentProject.tasks);
+    pubSub.publish('projectsUpdated');
 }
 
+pubSub.subscribe('taskCompleted', setTaskCompleted);
 
+function setTaskCompleted(id) {
+    const completedTask = currentProject.tasks.find(task => task.id === id);
+    completedTask.completed = !completedTask.completed;
+    console.log(currentProject);
+    pubSub.publish('projectTasksUpdated', currentProject.tasks);
+    pubSub.publish('projectsUpdated');
+}
 
-// projects.push(new Project('PFG'));
-// projects.push(new Project('Todo-list'));
+pubSub.subscribe('deleteTaskPressed', removeTask);
 
-// projects[0].addTask(new Task('Start', 'Today'));
-// projects[0].addTask(new Task('Make some progress', 'Tomorrow'));
-
-// projects[1].addTask(new Task('Make it'));
-
-// localStorage.setItem('projects',
-//     JSON.stringify(projects)
-// );
+function removeTask(id) {
+    // currentProject.removeTask(id);
+    const taskToDelete = currentProject.tasks.find(
+        (task) => task.id === id
+    );
+    currentProject.tasks.splice(currentProject.tasks.indexOf(taskToDelete), 1);
+    pubSub.publish('projectTasksUpdated', currentProject.tasks);
+    pubSub.publish('projectsUpdated');
+}

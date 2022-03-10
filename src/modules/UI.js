@@ -2,6 +2,7 @@ import { events as pubSub } from './events';
 import Project from './Project';
 import Task from './Task';
 import * as dom from './domCollector';
+import { de } from 'date-fns/locale';
 
 window.addEventListener('load', () => pubSub.publish('windowLoad'));
 
@@ -25,7 +26,6 @@ dom.cancelTaskBtn.addEventListener('click', () => pubSub.publish('cancelTaskPres
 dom.addProjectBtn.addEventListener('click', () => pubSub.publish('addProjectPressed'));
 
 pubSub.subscribe('windowLoad', renderFirstLoad);
-// pubSub.subscribe('windowLoad', renderTaskList);
 
 pubSub.subscribe('projectTasksUpdated', renderTaskList);
 
@@ -37,12 +37,12 @@ let projects = JSON.parse(localStorage.getItem('projects')) || [];
 
 function displayNewTaskForm() {
     dom.newTaskForm.classList.remove('hidden');
-    dom.addTaskBtn.disabled = true;
+    // dom.addTaskBtn.disabled = true;
 };
 
 function hideNewTaskForm() {
     newTaskForm.classList.add('hidden');
-    dom.addTaskBtn.disabled = false;
+    // dom.addTaskBtn.disabled = false;
     //clearNewTaskForm();
 };
 
@@ -77,8 +77,49 @@ function renderProjectList() {
 function renderTaskList(tasks) {
     dom.taskList.textContent = '';
     tasks.forEach(task => {
-        const newTask = document.createElement('li');
-        newTask.textContent = task.title;
-        dom.taskList.appendChild(newTask);
+        dom.taskList.appendChild(buildTask(task));
     });
+}
+
+pubSub.subscribe('addTaskPressed', fadeBackground);
+
+function fadeBackground() {
+    dom.fullscreenContainer.classList.remove('hidden');
+}
+
+pubSub.subscribe('saveTaskPressed', clearFadedBackground);
+pubSub.subscribe('cancelTaskPressed', clearFadedBackground);
+
+function clearFadedBackground() {
+    dom.fullscreenContainer.classList.add('hidden');
+}
+
+
+    // TODO refactor event listeners, maybe put them somewhere else?
+function buildTask(task) {
+    const newTask = document.createElement('li');
+    // Checkbox
+    const taskCheck = document.createElement('input');
+    taskCheck.type = 'checkbox';
+    taskCheck.checked = task.completed;
+    taskCheck.addEventListener('change', () => {
+        console.log('check');
+        taskTitle.classList.toggle('crossedThrough');
+        pubSub.publish('taskCompleted', task.id);
+    });
+    newTask.appendChild(taskCheck);
+    // Task title
+    const taskTitle = document.createElement('p');
+    taskTitle.textContent = task.title;
+    if (task.completed) taskTitle.classList.add('crossedThrough');
+    newTask.appendChild(taskTitle);
+    // Delete button
+    const deleteTaskBtn = document.createElement('button');
+    deleteTaskBtn.type = 'button';
+    deleteTaskBtn.textContent = 'Delete';
+    deleteTaskBtn.addEventListener('click', () => {
+        pubSub.publish('deleteTaskPressed', task.id);
+    });
+    newTask.appendChild(deleteTaskBtn);
+    return newTask;
 }
