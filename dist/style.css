@@ -15,11 +15,14 @@ main {
     flex: 1;
 }
 
-#newTaskForm {
+.form {
     position: fixed;
+    background-color: white;
+}
+
+#newTaskForm {
     top: 50px;
     right: 50px;
-    background-color: white;
 }
 
 .row {
@@ -27,16 +30,22 @@ main {
     grid-template-columns: 1fr 2fr;
 }
 
-#newTaskForm label {
+.form label {
     width: 100px;
 }
 
-#newTaskForm textarea {
+.form textarea {
     resize: none;
 }
 
-#newTaskForm button {
+.form button {
     width: 100px;
+}
+
+
+#newProjectForm {
+    top: 50px;
+    left: 50px;
 }
 
 input, label {

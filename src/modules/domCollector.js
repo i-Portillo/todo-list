@@ -13,5 +13,11 @@ export const newTaskFields = {
 export const taskList = document.getElementById('taskList');
 
 export const addProjectBtn = document.getElementById('addProjectBtn');
+export const newProjectForm = document.getElementById('newProjectForm');
+export const newProjectFields = {
+    name: document.getElementById('newProjectName'),
+};
+export const saveProjectBtn = document.getElementById('saveProjectBtn');
+export const cancelProjectBtn = document.getElementById('cancelProjectBtn');
 
 export const fullscreenContainer = document.querySelector('.fullscreenContainer');

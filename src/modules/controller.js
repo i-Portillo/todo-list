@@ -1,11 +1,12 @@
 import Project from './Project';
 import Task from './Task';
 import { events as pubSub } from './events';
+import { retrieveProjects } from './Storage'; 
 
 
 // localStorage.clear(); //DEBUG
 
-export let projects = JSON.parse(localStorage.getItem('projects')) || [];
+export let projects = retrieveProjects() || [];
 
 if (projects.length === 0) {
     const newProject = new Project('PFG');
@@ -22,7 +23,7 @@ if (projects.length === 0) {
 
     localStorage.setItem('projects', JSON.stringify(projects));
 
-    projects = JSON.parse(localStorage.getItem('projects'));
+    projects = retrieveProjects();
 
     // console.log(projects);
 
@@ -62,11 +63,18 @@ function setTaskCompleted(id) {
 pubSub.subscribe('deleteTaskPressed', removeTask);
 
 function removeTask(id) {
-    // currentProject.removeTask(id);
     const taskToDelete = currentProject.tasks.find(
         (task) => task.id === id
     );
     currentProject.tasks.splice(currentProject.tasks.indexOf(taskToDelete), 1);
     pubSub.publish('projectTasksUpdated', currentProject.tasks);
+    pubSub.publish('projectsUpdated');
+}
+
+pubSub.subscribe('newProjectSaved', saveNewProject);
+
+function saveNewProject([name]) {
+    const newProject = new Project(name);
+    projects.push(newProject);
     pubSub.publish('projectsUpdated');
 }

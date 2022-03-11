@@ -2,28 +2,33 @@ import { events as pubSub } from './events';
 import Project from './Project';
 import Task from './Task';
 import * as dom from './domCollector';
-import { de } from 'date-fns/locale';
+import { retrieveProjects as projects } from './Storage';
+// import { de } from 'date-fns/locale';
 
 window.addEventListener('load', () => pubSub.publish('windowLoad'));
 
-const addProjectBtn = document.getElementById('add-project-btn');
-// const addTaskBtn = document.getElementById('add-task-btn');
-
-// const newTaskForm = document.getElementById('newTaskForm');
+dom.addProjectBtn.addEventListener('click', () => pubSub.publish('addProjectPressed'));
 
 dom.addTaskBtn.addEventListener('click', () => pubSub.publish('addTaskPressed'));
 dom.saveTaskBtn.addEventListener('click', () => {
-    pubSub.publish('saveTaskPressed');
     pubSub.publish('newTaskSaved', [
         dom.newTaskFields.title.value,
         dom.newTaskFields.description.value,
         dom.newTaskFields.dueDate.value,
         dom.newTaskFields.priority.value,
     ]);
+    pubSub.publish('saveTaskPressed');
 });
 dom.cancelTaskBtn.addEventListener('click', () => pubSub.publish('cancelTaskPressed'));
 
 dom.addProjectBtn.addEventListener('click', () => pubSub.publish('addProjectPressed'));
+dom.saveProjectBtn.addEventListener('click', () => {
+    pubSub.publish('newProjectSaved', [
+        dom.newProjectFields.name.value,
+    ]);
+    pubSub.publish('saveProjectPressed');
+});
+dom.cancelProjectBtn.addEventListener('click', () => pubSub.publish('cancelProjectPressed'));
 
 pubSub.subscribe('windowLoad', renderFirstLoad);
 
@@ -33,8 +38,6 @@ pubSub.subscribe('addTaskPressed', displayNewTaskForm);
 pubSub.subscribe('saveTaskPressed', hideNewTaskForm);
 pubSub.subscribe('cancelTaskPressed', hideNewTaskForm);
 
-let projects = JSON.parse(localStorage.getItem('projects')) || [];
-
 function displayNewTaskForm() {
     dom.newTaskForm.classList.remove('hidden');
     // dom.addTaskBtn.disabled = true;
@@ -43,7 +46,7 @@ function displayNewTaskForm() {
 function hideNewTaskForm() {
     newTaskForm.classList.add('hidden');
     // dom.addTaskBtn.disabled = false;
-    //clearNewTaskForm();
+    clearNewTaskForm();
 };
 
 function clearNewTaskForm() {
@@ -53,24 +56,31 @@ function clearNewTaskForm() {
     dom.newTaskFields.priority.value = null;
 }
 
-function renderFirstLoad() {
-    renderProjectList();
-    renderTaskList(projects[0].tasks)
+pubSub.subscribe('addProjectPressed', displayNewProjectForm);
+
+function displayNewProjectForm() {
+    dom.newProjectForm.classList.remove('hidden');
 }
 
+pubSub.subscribe('saveProjectPressed', hideNewProjectForm);
+pubSub.subscribe('cancelProjectPressed', hideNewProjectForm);
+
+function hideNewProjectForm() {
+    dom.newProjectForm.classList.add('hidden');
+}
+
+function renderFirstLoad() {
+    renderProjectList();
+    renderTaskList(projects()[0].tasks)
+}
+
+pubSub.subscribe('projectsStored', renderProjectList);
+
 function renderProjectList() {
-    const projectList = document.getElementById('sidebar');
-    projects.forEach(project => {
-        const newProject = document.createElement('div');
-        newProject.classList.add('project');
-        newProject.innerHTML = 
-            `<p class="project-name">${project.name}</p>
-            <ul>
-                <li>Today</li>
-                <li>This week</li>
-                <li>All tasks</li>
-            </ul>`;
-        projectList.appendChild(newProject);
+    const projectList = document.getElementById('projectList');
+    projectList.innerHTML = '';
+    projects().forEach(project => {
+        projectList.appendChild(buildProject(project));
     });
 }
 
@@ -82,6 +92,7 @@ function renderTaskList(tasks) {
 }
 
 pubSub.subscribe('addTaskPressed', fadeBackground);
+pubSub.subscribe('addProjectPressed', fadeBackground);
 
 function fadeBackground() {
     dom.fullscreenContainer.classList.remove('hidden');
@@ -89,13 +100,15 @@ function fadeBackground() {
 
 pubSub.subscribe('saveTaskPressed', clearFadedBackground);
 pubSub.subscribe('cancelTaskPressed', clearFadedBackground);
+pubSub.subscribe('saveProjectPressed', clearFadedBackground);
+pubSub.subscribe('cancelProjectPressed', clearFadedBackground);
 
 function clearFadedBackground() {
     dom.fullscreenContainer.classList.add('hidden');
 }
 
 
-    // TODO refactor event listeners, maybe put them somewhere else?
+    // TODO refractor event listeners, maybe put them somewhere else?
 function buildTask(task) {
     const newTask = document.createElement('li');
     // Checkbox
@@ -122,4 +135,21 @@ function buildTask(task) {
     });
     newTask.appendChild(deleteTaskBtn);
     return newTask;
+}
+
+function buildProject(project) {
+    const newProject = document.createElement('div');
+    // Project name
+    const projectName = document.createElement('p');
+    projectName.classList.add('projectName');
+    projectName.textContent = project.name;
+    newProject.appendChild(projectName);
+    // Delete project button
+    const deleteProjectBtn = document.createElement('button');
+    deleteProjectBtn.id = 'deleteProjectBtn';
+    deleteProjectBtn.type = 'button';
+    deleteProjectBtn.textContent = 'Delete';
+    newProject.appendChild(deleteProjectBtn);
+
+    return newProject;
 }

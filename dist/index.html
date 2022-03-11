@@ -12,22 +12,9 @@
     <main>
         <div id="sidebar">
             <button id="addProjectBtn">Add Project</button>
-            <!-- <div class="project">
-                <p class="project-name">Project Name</p>
-                <ul>
-                    <li>Today</li>
-                    <li>This week</li>
-                    <li>All tasks</li>
-                </ul>
+            <div id="projectList">
+
             </div>
-            <div class="project">
-                <p class="project-name">Project Name</p>
-                <ul>
-                    <li>Today</li>
-                    <li>This week</li>
-                    <li>All tasks</li>
-                </ul>
-            </div> -->
         </div>
         <div id="content">
             <div class="project-box">
@@ -38,7 +25,7 @@
             </div>
         </div>
         <div class="fullscreenContainer hidden">
-            <form id="newTaskForm" class="hidden">
+            <form id="newTaskForm" class="hidden form">
                 <h3>New Task</h3>
                 <div class="row">
                     <label for="newTaskTitle">Title:</label>
@@ -60,6 +47,17 @@
                 <div class="row">
                     <button type="button" id="saveTaskBtn">Save</button>
                     <button type="button" id="cancelTaskBtn">Cancel</button>
+                </div>
+            </form>
+            <form id="newProjectForm" class="hidden form">
+                <h3>New Project</h3>
+                <div class="row">
+                    <label for="newProjectName">Name:</label>
+                    <input type="text" id="newProjectName">
+                </div>
+                <div class="row">
+                    <button type="button" id="saveProjectBtn">Save</button>
+                    <button type="button" id="cancelProjectBtn">Cancel</button>
                 </div>
             </form>
         </div>
