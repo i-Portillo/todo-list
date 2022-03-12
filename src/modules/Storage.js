@@ -1,5 +1,4 @@
 import { events as pubSub } from './events';
-import { projects } from './controller';
 import Project from './Project';
 import Task from './Task';
 
@@ -8,7 +7,7 @@ import Task from './Task';
 
 pubSub.subscribe('projectsUpdated', storeProjects);
 
-function storeProjects() {
+function storeProjects(projects) {
     localStorage.setItem('projects', JSON.stringify(projects));
     pubSub.publish('projectsStored');
 }
@@ -20,5 +19,6 @@ export function getProjects() {
         project.tasks = project.tasks
             .map((task) => Object.assign(new Task(), task));
     });
+    console.log(projects);
     return projects;
 }

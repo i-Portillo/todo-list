@@ -16,28 +16,7 @@ if (projects.length === 0) {
     newProject.tasks.push(task1);
     newProject.tasks.push(task2);
     projects.push(newProject);
-
-    // console.log(JSON.stringify(projects));
-
-    // console.log(projects);
-    console.log(projects[0].tasks[0].title);
-
-    localStorage.setItem('projects', JSON.stringify(projects));
-
-    projects = getProjects();
-
-    // console.log(projects);
-
-    console.log(projects[0].tasks[1].title);
-
-    projects[0].tasks[0].title = 'WTF';
-
-    localStorage.setItem('projects', JSON.stringify(projects));
-
-    projects = JSON.parse(localStorage.getItem('projects'));
-
-    console.log(projects[0].tasks[0].title);
-
+    pubSub.publish('projectsUpdated', projects);
 }
 
 let currentProject = projects[0];
@@ -47,8 +26,8 @@ pubSub.subscribe('newTaskSaved', saveNewTask);
 function saveNewTask([title, description, dueDate, priority]) {
     const newTask = new Task(title, description, dueDate, priority);
     currentProject.tasks.push(newTask);
-    pubSub.publish('projectTasksUpdated', currentProject.tasks);
-    pubSub.publish('projectsUpdated');
+    pubSub.publish('projectTasksUpdated', currentProject);
+    pubSub.publish('projectsUpdated', projects);
 }
 
 pubSub.subscribe('taskCompleted', setTaskCompleted);
@@ -57,8 +36,8 @@ function setTaskCompleted(id) {
     const completedTask = currentProject.tasks.find(task => task.id === id);
     completedTask.completed = !completedTask.completed;
     console.log(currentProject);
-    pubSub.publish('projectTasksUpdated', currentProject.tasks);
-    pubSub.publish('projectsUpdated');
+    pubSub.publish('projectTasksUpdated', currentProject);
+    pubSub.publish('projectsUpdated', projects);
 }
 
 pubSub.subscribe('deleteTaskPressed', removeTask);
@@ -68,8 +47,8 @@ function removeTask(id) {
         (task) => task.id === id
     );
     currentProject.tasks.splice(currentProject.tasks.indexOf(taskToDelete), 1);
-    pubSub.publish('projectTasksUpdated', currentProject.tasks);
-    pubSub.publish('projectsUpdated');
+    pubSub.publish('projectTasksUpdated', currentProject);
+    pubSub.publish('projectsUpdated', projects);
 }
 
 pubSub.subscribe('newProjectSaved', saveNewProject);
@@ -77,5 +56,24 @@ pubSub.subscribe('newProjectSaved', saveNewProject);
 function saveNewProject([name]) {
     const newProject = new Project(name);
     projects.push(newProject);
-    pubSub.publish('projectsUpdated');
+    pubSub.publish('projectsUpdated', projects);
+}
+
+pubSub.subscribe('deleteProjectPressed', removeProject);
+
+function removeProject(name) {
+    const projectToDelete = projects.find(
+        (project) => project.name === name
+    );
+    projects.splice(projects.indexOf(projectToDelete), 1);
+    pubSub.publish('projectsUpdated', projects);
+}
+
+pubSub.subscribe('currentProjectChanged', changeCurrentProject);
+
+function changeCurrentProject(newCurrentProject) {
+    currentProject = projects.find(
+        (project) => project.name === newCurrentProject.name
+    );
+    console.log(currentProject);
 }

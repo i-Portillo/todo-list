@@ -3,7 +3,8 @@ import Project from './Project';
 import Task from './Task';
 import * as dom from './domCollector';
 import { getProjects } from './Storage';
-// import { de } from 'date-fns/locale';
+
+let currentProject = null;
 
 window.addEventListener('load', () => pubSub.publish('windowLoad'));
 
@@ -33,6 +34,7 @@ dom.cancelProjectBtn.addEventListener('click', () => pubSub.publish('cancelProje
 pubSub.subscribe('windowLoad', renderFirstLoad);
 
 pubSub.subscribe('projectTasksUpdated', renderTaskList);
+pubSub.subscribe('currentProjectChanged', renderTaskList)
 
 pubSub.subscribe('addTaskPressed', displayNewTaskForm);
 pubSub.subscribe('saveTaskPressed', hideNewTaskForm);
@@ -40,12 +42,10 @@ pubSub.subscribe('cancelTaskPressed', hideNewTaskForm);
 
 function displayNewTaskForm() {
     dom.newTaskForm.classList.remove('hidden');
-    // dom.addTaskBtn.disabled = true;
 };
 
 function hideNewTaskForm() {
     newTaskForm.classList.add('hidden');
-    // dom.addTaskBtn.disabled = false;
     clearNewTaskForm();
 };
 
@@ -70,8 +70,9 @@ function hideNewProjectForm() {
 }
 
 function renderFirstLoad() {
+    currentProject = getProjects()[0];
     renderProjectList();
-    renderTaskList(getProjects()[0].tasks)
+    renderTaskList(currentProject)
 }
 
 pubSub.subscribe('projectsStored', renderProjectList);
@@ -84,9 +85,9 @@ function renderProjectList() {
     });
 }
 
-function renderTaskList(tasks) {
+function renderTaskList(project) {
     dom.taskList.textContent = '';
-    tasks.forEach(task => {
+    project.tasks.forEach(task => {
         dom.taskList.appendChild(buildTask(task));
     });
 }
@@ -143,12 +144,21 @@ function buildProject(project) {
     const projectName = document.createElement('p');
     projectName.classList.add('projectName');
     projectName.textContent = project.name;
+    projectName.addEventListener('click', () => {
+        if (project.name !== currentProject.name) {
+            currentProject = project;
+            pubSub.publish('currentProjectChanged', project);
+        }
+    });
     newProject.appendChild(projectName);
     // Delete project button
     const deleteProjectBtn = document.createElement('button');
     deleteProjectBtn.id = 'deleteProjectBtn';
     deleteProjectBtn.type = 'button';
     deleteProjectBtn.textContent = 'Delete';
+    deleteProjectBtn.addEventListener('click', () => {
+        pubSub.publish('deleteProjectPressed');
+    });
     newProject.appendChild(deleteProjectBtn);
 
     return newProject;
