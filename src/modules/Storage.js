@@ -1,5 +1,7 @@
 import { events as pubSub } from './events';
 import { projects } from './controller';
+import Project from './Project';
+import Task from './Task';
 
 // TODO revamp module so it can compose Objects with functions and 
 // avoid storing and retrieving all the projects.
@@ -11,6 +13,12 @@ function storeProjects() {
     pubSub.publish('projectsStored');
 }
 
-export function retrieveProjects() {
-    return JSON.parse(localStorage.getItem('projects')) || [];
+export function getProjects() {
+    const projects = (JSON.parse(localStorage.getItem('projects')) || [])
+        .map((project) => Object.assign(new Project(), project));
+    projects.forEach(project => {
+        project.tasks = project.tasks
+            .map((task) => Object.assign(new Task(), task));
+    });
+    return projects;
 }

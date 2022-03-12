@@ -2,7 +2,7 @@ import { events as pubSub } from './events';
 import Project from './Project';
 import Task from './Task';
 import * as dom from './domCollector';
-import { retrieveProjects as projects } from './Storage';
+import { getProjects } from './Storage';
 // import { de } from 'date-fns/locale';
 
 window.addEventListener('load', () => pubSub.publish('windowLoad'));
@@ -71,7 +71,7 @@ function hideNewProjectForm() {
 
 function renderFirstLoad() {
     renderProjectList();
-    renderTaskList(projects()[0].tasks)
+    renderTaskList(getProjects()[0].tasks)
 }
 
 pubSub.subscribe('projectsStored', renderProjectList);
@@ -79,7 +79,7 @@ pubSub.subscribe('projectsStored', renderProjectList);
 function renderProjectList() {
     const projectList = document.getElementById('projectList');
     projectList.innerHTML = '';
-    projects().forEach(project => {
+    getProjects().forEach(project => {
         projectList.appendChild(buildProject(project));
     });
 }

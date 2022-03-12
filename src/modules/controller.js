@@ -1,13 +1,14 @@
 import Project from './Project';
 import Task from './Task';
 import { events as pubSub } from './events';
-import { retrieveProjects } from './Storage'; 
+import { getProjects } from './Storage'; 
 
 
 // localStorage.clear(); //DEBUG
 
-export let projects = retrieveProjects() || [];
+export let projects = getProjects();
 
+// DEBUG
 if (projects.length === 0) {
     const newProject = new Project('PFG');
     const task1 = new Task('Do thing', 'Desc1');
@@ -23,7 +24,7 @@ if (projects.length === 0) {
 
     localStorage.setItem('projects', JSON.stringify(projects));
 
-    projects = retrieveProjects();
+    projects = getProjects();
 
     // console.log(projects);
 
